@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Ordnance Factory Badmal
+    </title>
+
+    <link rel="stylesheet"
+          href="style.css">
+</head>
+
+<body>
+
+<header class="main-header">
+
+    <h1>
+        ORDNANCE FACTORY BADMAL
+    </h1>
+
+    <h2>
+        Attendance Management System
+    </h2>
+
+</header>
+
+<main class="index-wrapper">
+
+    <div class="index-card">
+
+        <!-- HOME PAGE -->
+
+        <div id="homePage">
+
+            <h2>
+                Choose Option
+            </h2>
+
+            <div class="option-buttons">
+
+                <button type="button"
+                        id="adminButton">
+
+                    Admin
+
+                </button>
+
+                <button type="button"
+                        onclick="window.location.href='user.php'">
+
+                    User
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ADMIN LOGIN -->
+
+        <div id="adminLoginPage">
+
+            <h2>
+                Admin Login
+            </h2>
+
+            <form id="adminForm"
+      action="adminlogin.php"
+      method="POST">
+
+                <div>
+
+                    <label>
+                        Admin ID
+                    </label>
+
+                    <input type="text"
+                           name="adminId"
+                           required>
+
+                </div>
+
+                <div>
+
+    <label>
+        Password
+    </label>
+
+    <div class="password-container">
+
+        <input type="password"
+               id="adminPassword"
+               name="password"
+               required>
+
+<span id="togglePassword">
+
+    <img src="eye.png"
+         id="eyeIcon"
+         alt="Toggle Password">
+
+</span>
+    </div>
+
+</div>
+                <p id="loginErrorMessage"></p>
+
+                <button type="submit">
+
+                    Login
+
+                </button>
+
+                <button type="button"
+                        id="adminBackButton">
+
+                    Back
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<footer class="main-footer">
+
+    <p>
+        Ordnance Factory Badmal
+    </p>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
