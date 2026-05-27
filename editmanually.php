@@ -26,6 +26,8 @@ $employee_id = "";
 $employee_name = "";
 $phone_number = "";
 $category = "";
+$dob = "";
+$address = "";
 
 if (
     isset($_POST['searchEmployee'])
@@ -70,6 +72,12 @@ if (
         $category =
         $employee['category'];
 
+        $dob =
+        $employee['dob'];
+
+        $address =
+        $employee['address'];
+
     }
 
     else {
@@ -96,11 +104,18 @@ if (
 
     $category =
     trim($_POST['category']);
+    $dob =
+    trim($_POST['dob']);
+    $address =
+    trim($_POST['address']);
+
 
     if (
-        $employee_name == "" ||
-        $phone_number == "" ||
-        $category == ""
+       $employee_name == "" ||
+$phone_number == "" ||
+$category == "" ||
+$dob == "" ||
+$address == ""
     ) {
 
         $error_message =
@@ -124,7 +139,14 @@ if (
         '$category',
 
         phone_number =
-        '$phone_number'
+        '$phone_number',
+
+        dob =
+        '$dob',
+
+        address =
+        '$address'
+
 
         WHERE employee_id =
         '$employee_id'
@@ -247,6 +269,27 @@ Edit Manually
     padding: 0 20px;
 
     box-sizing: border-box;
+}
+
+.form-group textarea {
+
+    width: 100%;
+
+    font-size: 22px;
+
+    border-radius: 12px;
+
+    border: 2px solid #9fc5e8;
+
+    padding: 15px 20px;
+
+    box-sizing: border-box;
+
+    resize: vertical;
+
+    min-height: 120px;
+
+    font-family: inherit;
 
 }
 
@@ -262,7 +305,7 @@ Edit Manually
 
 .button-row button {
 
-    width: 220px;
+    width: 260px;
 
     height: 70px;
 
@@ -278,6 +321,8 @@ Edit Manually
 
     cursor: pointer;
 
+    white-space: nowrap;
+
 }
 
 .search-btn {
@@ -289,7 +334,7 @@ Edit Manually
 .update-btn {
 
     background: #2f944f;
-
+    white-space: nowrap;
 }
 
 .back-btn {
@@ -483,6 +528,24 @@ Phone Number
 <div class="form-group">
 
 <label>
+Date of Birth
+</label>
+
+<input type="date"
+       name="dob"
+       id="dob"
+
+       value="<?php echo $dob; ?>"
+
+       max="<?php echo date('Y-m-d'); ?>"
+
+       required>
+
+</div>
+
+<div class="form-group">
+
+<label>
 Category
 </label>
 
@@ -493,6 +556,20 @@ Category
        value="<?php echo $category; ?>"
 
        required>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Address
+</label>
+
+<textarea
+       name="address"
+       id="address"
+       rows="4"
+       required><?php echo $address; ?></textarea>
 
 </div>
 
@@ -597,7 +674,7 @@ Update Employee
             cursor:pointer;
             ">
 
-            Yes Update
+            Yes 
 
             </button>
 
@@ -699,6 +776,50 @@ document.getElementById(
     "phoneWarning"
 );
 
+const employeeNameInput =
+document.getElementById(
+    "employee_name"
+);
+
+const dobInput =
+document.getElementById(
+    "dob"
+);
+
+const categoryInput =
+document.getElementById(
+    "category"
+);
+
+const addressInput =
+document.getElementById(
+    "address"
+);
+
+const originalValues = {
+
+    employee_name:
+    employeeNameInput ?
+    employeeNameInput.value.trim() : "",
+
+    phone_number:
+    phoneInput ?
+    phoneInput.value.trim() : "",
+
+    dob:
+    dobInput ?
+    dobInput.value.trim() : "",
+
+    category:
+    categoryInput ?
+    categoryInput.value.trim() : "",
+
+    address:
+    addressInput ?
+    addressInput.value.trim() : ""
+
+};
+
 function validatePhoneNumber() {
 
     if (!phoneInput) {
@@ -708,12 +829,41 @@ function validatePhoneNumber() {
     const phone =
     phoneInput.value.trim();
 
-    if (
-        /^[0-9]{10}$/.test(phone)
-    ) {
+    const phoneValid =
+    /^[0-9]{10}$/.test(phone);
+
+    if (!phoneValid) {
+
+        phoneWarning.innerHTML =
+        "Phone number must contain exactly 10 digits.";
+
+    }
+
+    else {
 
         phoneWarning.innerHTML =
         "";
+
+    }
+
+    const changed =
+
+        employeeNameInput.value.trim() !==
+        originalValues.employee_name ||
+
+        phoneInput.value.trim() !==
+        originalValues.phone_number ||
+
+        dobInput.value.trim() !==
+        originalValues.dob ||
+
+        categoryInput.value.trim() !==
+        originalValues.category ||
+
+        addressInput.value.trim() !==
+        originalValues.address;
+
+    if (phoneValid && changed) {
 
         updateButton.disabled =
         false;
@@ -727,9 +877,6 @@ function validatePhoneNumber() {
     }
 
     else {
-
-        phoneWarning.innerHTML =
-        "Phone number must contain exactly 10 digits.";
 
         updateButton.disabled =
         true;
@@ -747,6 +894,26 @@ function validatePhoneNumber() {
 if (phoneInput) {
 
     phoneInput.addEventListener(
+        "input",
+        validatePhoneNumber
+    );
+
+    employeeNameInput.addEventListener(
+        "input",
+        validatePhoneNumber
+    );
+
+    dobInput.addEventListener(
+        "input",
+        validatePhoneNumber
+    );
+
+    categoryInput.addEventListener(
+        "input",
+        validatePhoneNumber
+    );
+
+    addressInput.addEventListener(
         "input",
         validatePhoneNumber
     );

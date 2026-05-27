@@ -92,24 +92,127 @@ foreach (
 
     ) {
 
-
+$ignore_morning_punch = false;
 
         // GET PUNCHES
 
-        $punch_query =
-        "
-        SELECT punch_time
+        $previous_date =
+date(
+    'Y-m-d',
+    strtotime(
+        $attendance_date .
+        ' -1 day'
+    )
+);
 
-        FROM raw_punch
+$previous_night_query =
+"
+SELECT in_time, out_time
 
-        WHERE employee_id =
-        '$employee_id'
+FROM attendance_final
 
-        AND punch_date =
-        '$attendance_date'
+WHERE employee_id =
+'$employee_id'
 
-        ORDER BY punch_time ASC
-        ";
+AND attendance_date =
+'$previous_date'
+";
+
+$previous_night_result =
+mysqli_query(
+    $connection,
+    $previous_night_query
+);
+
+if (
+
+    mysqli_num_rows(
+        $previous_night_result
+    ) > 0
+
+) {
+
+    $previous_night =
+    mysqli_fetch_assoc(
+        $previous_night_result
+    );
+
+    if (
+
+        $previous_night['in_time']
+        &&
+        $previous_night['out_time']
+
+    ) {
+
+        $previous_in =
+        strtotime(
+            $previous_date .
+            ' ' .
+            $previous_night['in_time']
+        );
+
+        $night_start =
+        strtotime(
+            $previous_date .
+            ' 20:30:00'
+        );
+
+        if (
+
+            $previous_in >=
+            $night_start
+
+        ) {
+
+            $ignore_morning_punch =
+            true;
+
+        }
+
+    }
+
+}
+
+if ($ignore_morning_punch) {
+
+    $punch_query =
+    "
+    SELECT punch_time
+
+    FROM raw_punch
+
+    WHERE employee_id =
+    '$employee_id'
+
+    AND punch_date =
+    '$attendance_date'
+
+    AND punch_time >= '06:30:00'
+
+    ORDER BY punch_time ASC
+    ";
+
+}
+
+else {
+
+    $punch_query =
+    "
+    SELECT punch_time
+
+    FROM raw_punch
+
+    WHERE employee_id =
+    '$employee_id'
+
+    AND punch_date =
+    '$attendance_date'
+
+    ORDER BY punch_time ASC
+    ";
+
+}
 
         $punch_result =
         mysqli_query(
@@ -131,6 +234,8 @@ foreach (
         $in_time = NULL;
 
         $out_time = NULL;
+
+        $night_shift = false;
 
         $working_hours = 0;
 
@@ -186,30 +291,164 @@ foreach (
             $in_time =
             $first_punch['punch_time'];
 
+            $in_datetime =
+strtotime(
+    $attendance_date .
+    ' ' .
+    $in_time
+);
 
+$night_shift_start =
+strtotime(
+    $attendance_date .
+    ' 20:30:00'
+);
 
-            mysqli_data_seek(
-                $punch_result,
-                $total_punch - 1
-            );
+if (
 
-            $last_punch =
-            mysqli_fetch_assoc(
-                $punch_result
-            );
+    $in_datetime >=
+    $night_shift_start
+
+) {
+
+    $next_date =
+    date(
+        'Y-m-d',
+        strtotime(
+            $attendance_date .
+            ' +1 day'
+        )
+    );
+
+    $next_punch_query =
+    "
+    SELECT punch_time
+
+    FROM raw_punch
+
+    WHERE employee_id =
+    '$employee_id'
+
+    AND punch_date =
+    '$next_date'
+
+    ORDER BY punch_time ASC
+
+    LIMIT 1
+    ";
+
+    $next_punch_result =
+    mysqli_query(
+        $connection,
+        $next_punch_query
+    );
+
+    if (
+
+        mysqli_num_rows(
+            $next_punch_result
+        ) > 0
+
+    ) {
+
+        $next_punch =
+        mysqli_fetch_assoc(
+            $next_punch_result
+        );
+
+        $next_out_time =
+        $next_punch['punch_time'];
+
+        $next_out_datetime =
+        strtotime(
+            $next_date .
+            ' ' .
+            $next_out_time
+        );
+
+        $night_shift_end =
+        strtotime(
+            $next_date .
+            ' 07:30:00'
+        );
+
+        if (
+
+            $next_out_datetime <=
+            $night_shift_end
+
+        ) {
 
             $out_time =
-            $last_punch['punch_time'];
+            $next_out_time;
+
+            $night_shift = true;
+
+        }
+
+    }
+
+}
+
+
+
+            if (!$night_shift) {
+
+    mysqli_data_seek(
+        $punch_result,
+        $total_punch - 1
+    );
+
+    $last_punch =
+    mysqli_fetch_assoc(
+        $punch_result
+    );
+
+    $out_time =
+    $last_punch['punch_time'];
+
+}
 
 
 
             // WORKING HOURS
 
-            $in_seconds =
-            strtotime($in_time);
+           if ($night_shift) {
 
-            $out_seconds =
-            strtotime($out_time);
+    $in_seconds =
+    strtotime(
+        $attendance_date .
+        ' ' .
+        $in_time
+    );
+
+    $next_date =
+    date(
+        'Y-m-d',
+        strtotime(
+            $attendance_date .
+            ' +1 day'
+        )
+    );
+
+    $out_seconds =
+    strtotime(
+        $next_date .
+        ' ' .
+        $out_time
+    );
+
+}
+
+else {
+
+    $in_seconds =
+    strtotime($in_time);
+
+    $out_seconds =
+    strtotime($out_time);
+
+}
 
             $working_hours =
             (

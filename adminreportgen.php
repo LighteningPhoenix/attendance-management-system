@@ -479,6 +479,7 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
             $sp  = 0;
             $pp  = 0;
             $prc = 0;
+            $wff = false;
 
             foreach ($date_array as $date) {
 
@@ -505,6 +506,37 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
                     $status =
                     $attendance['status'];
+                    $current_day =
+date(
+    'D',
+    strtotime($date)
+);
+
+if (
+    $current_day == 'Sun'
+) {
+
+    $wff = false;
+
+}
+
+if (
+
+    $current_day == 'Sun'
+
+    &&
+
+    (
+        $status == 'PR'
+        ||
+        $status == 'PRC'
+    )
+
+) {
+
+    $wff = true;
+
+}
 
                 }
 
@@ -514,7 +546,6 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
                 }
 
-                echo "<td>$status</td>";
 
                 if ($status == "PR") {
 
@@ -530,9 +561,21 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
                 if ($status == "AB") {
 
-                    $ab++;
+    if ($wff) {
 
-                }
+        $status = "WFF";
+
+        $wff = false;
+
+    }
+
+    else {
+
+        $ab++;
+
+    }
+
+}
 
                 if ($status == "SP") {
 
@@ -545,6 +588,7 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
                     $pp++;
 
                 }
+                echo "<td>$status</td>";
 
             }
 
@@ -620,7 +664,7 @@ echo "</tr>";
 
 echo "<tr class='total'>";
 
-echo "<td colspan='5'>TOTAL</td>";
+echo "<td colspan='4'>TOTAL</td>";
 
 foreach ($date_array as $date) {
 

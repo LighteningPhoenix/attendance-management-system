@@ -410,6 +410,7 @@ while (
             $emp_sp = 0;
             $emp_pp = 0;
             $emp_prc = 0;
+            $wff = false;
 
             foreach ($date_array as $date) {
 
@@ -442,6 +443,37 @@ while (
 
                     $status =
                         $attendance['status'];
+                    $current_day =
+date(
+    'D',
+    strtotime($date)
+);
+
+if (
+    $current_day == 'Sun'
+) {
+
+    $wff = false;
+
+}
+
+if (
+
+    $current_day == 'Sun'
+
+    &&
+
+    (
+        $status == 'PR'
+        ||
+        $status == 'PRC'
+    )
+
+) {
+
+    $wff = true;
+
+}
 
                 }
 
@@ -451,8 +483,7 @@ while (
 
                 }
 
-                echo
-                "<td>$status</td>";
+               
 
                 if ($status == 'PR') {
 
@@ -464,10 +495,21 @@ while (
 
                 else if ($status == 'AB') {
 
-                    $emp_ab++;
+    if ($wff) {
 
-                }
+        $status = 'WFF';
 
+        $wff = false;
+
+    }
+
+    else {
+
+        $emp_ab++;
+
+    }
+
+}
                 else if ($status == 'SP') {
 
                     $emp_sp++;
@@ -487,6 +529,8 @@ while (
                     $grand_daily_totals[$date]++;
 
                 }
+                echo
+"<td>$status</td>";
 
             }
 

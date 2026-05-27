@@ -115,6 +115,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $_POST["phone_number"];
 
+    $dob =
+
+    $_POST["dob"];
+
+
+
+$address =
+
+    $_POST["address"];
 
 
     for ($i = 0; $i < count($employee_name); $i++) {
@@ -145,7 +154,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $phone_number[$i]
         );
 
+        $emp_dob = mysqli_real_escape_string(
+    $connection,
+    $dob[$i]
+);
 
+
+
+$emp_address = mysqli_real_escape_string(
+    $connection,
+    $address[$i]
+);
 
         // AUTO GENERATE EMPLOYEE ID
 
@@ -230,14 +249,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql =
 
             "INSERT INTO master
-            (
-                contractor_name,
-                category,
-                employee_id,
-                employee_name,
-                aadhaar_number,
-                phone_number
-            )
+(
+    contractor_name,
+    category,
+    employee_id,
+    employee_name,
+    aadhaar_number,
+    phone_number,
+    dob,
+    address
+)
 
             VALUES
             (
@@ -246,7 +267,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 '$emp_id',
                 '$emp_name',
                 '$aadhaar',
-                '$phone'
+                '$phone',
+                '$emp_dob',
+                '$emp_address'
             )";
 
 
@@ -390,6 +413,18 @@ Add Contractor
 
 }
 
+textarea {
+
+    width: 100%;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-sizing: border-box;
+
+}
 </style>
 
 </head>
@@ -592,6 +627,14 @@ Phone Number
 </th>
 
 <th>
+DOB
+</th>
+
+<th>
+Address
+</th>
+
+<th>
 Action
 </th>
 
@@ -648,7 +691,22 @@ Action
        required>
 
 </td>
+<td>
 
+<input type="date"
+       name="dob[]"
+       max="<?php echo date('Y-m-d'); ?>"
+       required>
+
+</td>
+
+<td>
+
+<textarea name="address[]"
+          rows="2"
+          required></textarea>
+
+</td>
 
 
 <td>
@@ -803,6 +861,21 @@ addRowButton.addEventListener(
 
         <td>
 
+    <input type="date"
+           name="dob[]"
+           required>
+
+</td>
+
+<td>
+
+    <textarea name="address[]"
+              rows="2"
+              required></textarea>
+
+</td>
+        <td>
+
             <button type="button"
                     class="remove-row-btn">
 
@@ -896,7 +969,7 @@ function validateForm() {
     const inputs =
 
     contractorForm.querySelectorAll(
-        "input, select"
+       "input, select, textarea"
     );
 
 
