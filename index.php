@@ -1,3 +1,8 @@
+<?php
+
+session_start();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +75,7 @@
             </h2>
 
             <form id="adminForm"
-      action="adminlogin.php"
+      action="Backend/adminlogin.php"
       method="POST">
 
                 <div>
@@ -87,28 +92,51 @@
 
                 <div>
 
-    <label>
-        Password
-    </label>
+                    <label>
+                        Password
+                    </label>
 
-    <div class="password-container">
+                    <div class="password-container">
 
-        <input type="password"
-               id="adminPassword"
-               name="password"
-               required>
+                        <input type="password"
+                            id="adminPassword"
+                            name="password"
+                            required>
 
-<span id="togglePassword">
+                <span id="togglePassword">
 
-    <img src="eye.png"
-         id="eyeIcon"
-         alt="Toggle Password">
+                    <img src="eye.png"
+                        id="eyeIcon"
+                        alt="Toggle Password">
 
-</span>
-    </div>
+                </span>
+                    </div>
 
-</div>
-                <p id="loginErrorMessage"></p>
+                </div>
+                <p id="loginErrorMessage">
+
+                    <?php
+
+                    if (
+
+                        isset(
+                            $_SESSION['login_error']
+                        )
+
+                    ) {
+
+                        echo
+                        $_SESSION['login_error'];
+
+                        unset(
+                            $_SESSION['login_error']
+                        );
+
+                    }
+
+                    ?>
+
+                    </p>
 
                 <button type="submit">
 

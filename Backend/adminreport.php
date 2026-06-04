@@ -28,7 +28,7 @@ if (
     session_destroy();
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -52,7 +52,7 @@ if (
 ) {
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -77,7 +77,7 @@ Admin Report
 </title>
 
 <link rel="stylesheet"
-      href="style.css">
+      href="../style.css">
 
 <style>
 
@@ -197,17 +197,6 @@ Admin Report
 
 }
 
-#pdfButton {
-
-    background: #0b5394;
-
-}
-
-#excelButton {
-
-    background: #2f944f;
-
-}
 
 .download-buttons button:disabled {
 
@@ -321,7 +310,7 @@ Excel
 </div>
 
 <button class="back-btn"
-onclick="window.location.href='admin.php'">
+onclick="window.location.href='../admin.php'">
 
 Back
 

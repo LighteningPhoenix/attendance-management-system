@@ -28,7 +28,7 @@ if (
     session_destroy();
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -52,7 +52,7 @@ if (
 ) {
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -106,7 +106,7 @@ if (
         <div class="admin-options">
 
             <button id="addContractorButton"
-                    onclick="window.location.href='addcontractor.php'">
+                    onclick="window.location.href='Backend/addcontractor.php'">
 
                 Add Contractor
 
@@ -115,7 +115,7 @@ if (
 
 
             <button id="editManualButton"
-                    onclick="window.location.href='editmanually.php'">
+                    onclick="window.location.href='Backend/editmanually.php'">
 
                 Edit Manually
 
@@ -124,7 +124,7 @@ if (
 
 
             <button id="reportGenerateButton"
-                    onclick="window.location.href='adminreport.php'">
+                    onclick="window.location.href='Backend/adminreport.php'">
 
                 Report Generate
 
@@ -133,7 +133,7 @@ if (
 
 
             <button id="applyPrcButton"
-                    onclick="window.location.href='applyprc.php'">
+                    onclick="window.location.href='Backend/applyprc.php'">
 
                 Apply PRC
 
@@ -141,7 +141,7 @@ if (
 
 
              <button id="importCsvButton"
-                    onclick="window.location.href='importcsv.php'">
+                    onclick="window.location.href='Backend/importcsv.php'">
 
                 Import CSV
 

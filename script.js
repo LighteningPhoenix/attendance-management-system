@@ -267,7 +267,7 @@ else {
             function () {
 
                 reportForm.action =
-                    "excelreport.php";
+                    "Backend/excelreport.php";
 
                 reportForm.method =
                     "GET";
@@ -363,11 +363,25 @@ adminButton.addEventListener(
             "adminOpen"
         );
 
+        adminIdInput.value = "";
+
+        passwordInput.value = "";
+
+        if (loginErrorMessage) {
+
+            loginErrorMessage.textContent =
+            "";
+
+        }
+
+        adminLoginButton.disabled =
+        true;
+
         adminLoginPage.style.display =
-            "none";
+        "none";
 
         homePage.style.display =
-            "block";
+        "block";
 
     }
 

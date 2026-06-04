@@ -6,7 +6,7 @@ ini_set('display_errors', 0);
 
 ini_set('log_errors', 1);
 
-include 'db_connect.php';
+include 'Backend/db_connect.php';
 
 $contractor_name =
     $_GET['supplyOverhead'];
@@ -193,6 +193,13 @@ body {
 .back-btn {
 
     margin-top: 8px;
+
+}
+
+.pr-status {
+
+    font-family: Arial Black, Arial, sans-serif;
+    font-size: inherit;
 
 }
 
@@ -660,10 +667,15 @@ else {
 
                 }
 
-                echo
-                '<td>' .
-                $status .
-                '</td>';
+                if ($status == 'PR') {
+
+    echo "<td class='pr-status'>$status</td>";
+
+} else {
+
+    echo "<td>$status</td>";
+
+}
 
             }
 

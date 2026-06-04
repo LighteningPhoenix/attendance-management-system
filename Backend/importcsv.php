@@ -28,7 +28,7 @@ if (
     session_destroy();
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -52,7 +52,7 @@ if (
 ) {
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -122,11 +122,14 @@ if (
 
 
 
-                $employee_id =
+                $employee_id = str_pad(
+                    trim($row[2]),
+                    6,'0', STR_PAD_LEFT
+                );
 
-                mysqli_real_escape_string(
+                $employee_id = mysqli_real_escape_string(
                     $connection,
-                    trim($row[0])
+                    $employee_id
                 );
 
 
@@ -135,10 +138,35 @@ if (
 
                 mysqli_real_escape_string(
                     $connection,
-                    trim($row[1])
+                    trim($row[7])
                 );
 
-                // HANDLE DATE FORMAT
+                
+// HANDLE DATE FORMAT
+if (
+
+    preg_match(
+        "/^\d{2}-[A-Za-z]{3}-\d{4}$/",
+        $punch_date
+    )
+
+) {
+
+    $date_object = DateTime::createFromFormat(
+        'd-M-Y',
+        $punch_date
+    );
+
+    if ($date_object) {
+
+        $punch_date =
+        $date_object->format(
+            'Y-m-d'
+        );
+
+    }
+
+}
 
 if (
 
@@ -151,23 +179,11 @@ if (
 
     // dd-mm-yyyy → yyyy-mm-dd
 
-    $date_object =
-
-    DateTime::createFromFormat(
-        'd-m-Y',
-        $punch_date
-    );
-
-
+    $date_object =DateTime::createFromFormat('d-m-Y',$punch_date);
 
     if ($date_object) {
 
-        $punch_date =
-
-        $date_object->format(
-            'Y-m-d'
-        );
-
+        $punch_date = $date_object->format('Y-m-d');              
     }
 
 }
@@ -183,14 +199,7 @@ else if (
 
     // already yyyy-mm-dd
 
-    $date_object =
-
-    DateTime::createFromFormat(
-        'Y-m-d',
-        $punch_date
-    );
-
-
+    $date_object = DateTime::createFromFormat('Y-m-d',$punch_date);
 
     if ($date_object) {
 
@@ -210,7 +219,7 @@ else if (
 
                 mysqli_real_escape_string(
                     $connection,
-                    trim($row[2])
+                    trim($row[8])
                 );
 
                 // CONVERT AM/PM TO 24-HOUR FORMAT
@@ -281,6 +290,7 @@ else if (
                     ) == 0
 
                 ) {
+                    
 
                     continue;
 
@@ -354,32 +364,31 @@ else if (
 
                     if (
 
-    !in_array(
-        $punch_date,
-        $new_dates
-    )
+                        !in_array(
+                            $punch_date,
+                            $new_dates
+                        )
 
-) {
+                    ) {
 
-    $new_dates[] =
-    $punch_date;
+                        $new_dates[] =
+                        $punch_date;
 
-}
+                    }
 
-                }
+                                    }
 
-            }
-
-
-
-            fclose($file);
+                                }
 
 
 
-           // PROCESS NEW ATTENDANCE
+                                fclose($file);
 
-$_SESSION['new_dates'] =
-$new_dates;
+
+
+           
+// PROCESS NEW ATTENDANCE
+$_SESSION['new_dates'] = $new_dates;
 
 include 'process_punching.php';
 
@@ -435,7 +444,7 @@ Import CSV
 </title>
 
 <link rel="stylesheet"
-      href="style.css">
+      href="../style.css">
 
 <style>
 
@@ -825,7 +834,7 @@ Import New Data
 <button class="back-btn"
 
 onclick="
-window.location.href='admin.php'
+window.location.href='../admin.php'
 ">
 
 Back

@@ -1,5 +1,43 @@
 <?php
 session_start();
+// AUTO LOGOUT AFTER 1 HOUR
+
+$timeout_duration = 3600;
+
+
+
+if (
+
+    isset($_SESSION['LAST_ACTIVITY'])
+
+    &&
+
+    (
+        time() -
+        $_SESSION['LAST_ACTIVITY']
+    ) > $timeout_duration
+
+) {
+
+    session_unset();
+
+    session_destroy();
+
+    header(
+        "Location: index.php?admin=true"
+    );
+
+    exit();
+
+}
+
+
+
+// UPDATE LAST ACTIVITY TIME
+
+$_SESSION['LAST_ACTIVITY'] = time();
+
+
 
 if (
 
@@ -8,7 +46,7 @@ if (
 ) {
 
     header(
-        "Location: index.html"
+        "Location: index.php"
     );
 
     exit();
@@ -112,10 +150,9 @@ if (
 
     if (
        $employee_name == "" ||
-$phone_number == "" ||
-$category == "" ||
-$dob == "" ||
-$address == ""
+
+$category == "" 
+
     ) {
 
         $error_message =
@@ -201,7 +238,7 @@ Edit Manually
 </title>
 
 <link rel="stylesheet"
-      href="style.css">
+      href="../style.css">
 
 <style>
 
@@ -470,7 +507,7 @@ Search
 <button type="button"
         class="back-btn"
 
-onclick="window.location.href='admin.php'">
+onclick="window.location.href='../admin.php'">
 
 Back
 
@@ -822,15 +859,16 @@ const originalValues = {
 
 function validatePhoneNumber() {
 
-    if (!phoneInput) {
-        return;
-    }
-
     const phone =
     phoneInput.value.trim();
 
+    // PHONE IS OPTIONAL
+
     const phoneValid =
-    /^[0-9]{10}$/.test(phone);
+
+        phone === "" ||
+
+        /^[0-9]{10}$/.test(phone);
 
     if (!phoneValid) {
 

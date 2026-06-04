@@ -7,7 +7,7 @@ session_unset();
 session_destroy();
 
 header(
-    "Location: index.html?admin=true"
+    "Location: index.php?admin=true"
 );
 
 exit();

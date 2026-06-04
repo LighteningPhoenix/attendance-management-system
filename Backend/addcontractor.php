@@ -28,7 +28,7 @@ if (
     session_destroy();
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -52,7 +52,7 @@ if (
 ) {
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -111,20 +111,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $_POST["aadhaar_number"];
 
-    $phone_number =
+   $phone_number =
 
-        $_POST["phone_number"];
+    $_POST["phone_number"] ?? [];
 
-    $dob =
+$dob =
 
-    $_POST["dob"];
-
-
+    $_POST["dob"] ?? [];
 
 $address =
 
-    $_POST["address"];
-
+    $_POST["address"] ?? [];
 
     for ($i = 0; $i < count($employee_name); $i++) {
 
@@ -149,21 +146,19 @@ $address =
 
 
 
-        $phone = mysqli_real_escape_string(
-            $connection,
-            $phone_number[$i]
-        );
-
-        $emp_dob = mysqli_real_escape_string(
+       $phone = mysqli_real_escape_string(
     $connection,
-    $dob[$i]
+    $phone_number[$i] ?? ''
 );
 
-
+$emp_dob = mysqli_real_escape_string(
+    $connection,
+    $dob[$i] ?? ''
+);
 
 $emp_address = mysqli_real_escape_string(
     $connection,
-    $address[$i]
+    $address[$i] ?? ''
 );
 
         // AUTO GENERATE EMPLOYEE ID
@@ -338,7 +333,7 @@ Add Contractor
 </title>
 
 <link rel="stylesheet"
-      href="style.css">
+      href="../style.css">
 
 <style>
 
@@ -687,24 +682,21 @@ Action
        name="phone_number[]"
        pattern="[0-9]{10}"
        minlength="10"
-       maxlength="10"
-       required>
+       maxlength="10">
 
 </td>
 <td>
 
 <input type="date"
        name="dob[]"
-       max="<?php echo date('Y-m-d'); ?>"
-       required>
+       max="<?php echo date('Y-m-d'); ?>">
 
 </td>
 
 <td>
 
 <textarea name="address[]"
-          rows="2"
-          required></textarea>
+          rows="2"></textarea>
 
 </td>
 
@@ -753,7 +745,7 @@ Submit
 <br>
 
 <button type="button"
-        onclick="window.location.href='admin.php'">
+        onclick="window.location.href='../admin.php'">
 
     Back
 
@@ -854,8 +846,7 @@ addRowButton.addEventListener(
                    name="phone_number[]"
                    pattern="[0-9]{10}"
                    minlength="10"
-                   maxlength="10"
-                   required>
+                   maxlength="10">
 
         </td>
 
@@ -863,15 +854,14 @@ addRowButton.addEventListener(
 
     <input type="date"
            name="dob[]"
-           required>
+           max="<?php echo date('Y-m-d'); ?>">
 
 </td>
 
 <td>
 
     <textarea name="address[]"
-              rows="2"
-              required></textarea>
+              rows="2"></textarea>
 
 </td>
         <td>
@@ -967,34 +957,37 @@ function updateSerialNumbers() {
 function validateForm() {
 
     const inputs =
-
     contractorForm.querySelectorAll(
-       "input, select, textarea"
+        "input, select, textarea"
     );
-
-
 
     let allValid = true;
 
+    inputs.forEach(function(input) {
 
+        // SKIP OPTIONAL FIELDS
 
-    inputs.forEach(
+        if (
 
-        function (input) {
+            input.name === "phone_number[]" ||
 
-            if (
-                !input.checkValidity()
-            ) {
+            input.name === "dob[]" ||
 
-                allValid = false;
+            input.name === "address[]"
 
-            }
+        ) {
+
+            return;
 
         }
 
-    );
+        if (!input.checkValidity()) {
 
+            allValid = false;
 
+        }
+
+    });
 
     if (allValid) {
 

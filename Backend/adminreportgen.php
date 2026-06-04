@@ -2,68 +2,34 @@
 
 session_start();
 
-
-
 // AUTO LOGOUT AFTER 1 HOUR
-
 $timeout_duration = 3600;
 
-
-
 if (
-
-    isset($_SESSION['LAST_ACTIVITY'])
-
-    &&
-
-    (
-        time() -
-        $_SESSION['LAST_ACTIVITY']
-    ) > $timeout_duration
-
+    isset($_SESSION['LAST_ACTIVITY']) &&
+    (time() - $_SESSION['LAST_ACTIVITY']) > $timeout_duration
 ) {
 
     session_unset();
-
     session_destroy();
 
-    header(
-        "Location: index.html?admin=true"
-    );
-
+    header("Location: index.php?admin=true");
     exit();
-
 }
-
-
 
 // UPDATE LAST ACTIVITY TIME
-
 $_SESSION['LAST_ACTIVITY'] = time();
 
-
-
 // CHECK ADMIN LOGIN
+if (!isset($_SESSION['admin'])) {
 
-if (
-
-    !isset($_SESSION['admin'])
-
-) {
-
-    header(
-        "Location: index.html?admin=true"
-    );
-
+    header("Location: index.php?admin=true");
     exit();
-
 }
-
 
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
 
 ini_set('display_errors', 0);
-
 ini_set('log_errors', 1);
 
 include 'db_connect.php';
@@ -81,73 +47,56 @@ $to_date   = $_GET['toDate'];
 
 <meta charset="UTF-8">
 
-<title>
-Attendance Report
-</title>
+<title>Attendance Report</title>
 
 <style>
 
 @page {
-
     size: A4 landscape;
     margin: 2mm;
-
 }
 
 body {
-
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     font-size: 8px;
-
 }
 
 .header-title {
-
     text-align: center;
     font-size: 20px;
     font-weight: bold;
     margin-top: 3px;
     margin-bottom: 2px;
-
 }
 
 .header-subtitle {
-
     text-align: center;
     font-size: 12px;
     font-weight: bold;
     margin-bottom: 5px;
-
 }
 
 .date-row {
-
     width: 100%;
     margin-bottom: 4px;
     font-size: 9px;
     font-weight: bold;
-
 }
 
 .date-row td {
-
     border: none;
-
 }
 
 .report-table {
-
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-
 }
 
 .report-table th,
 .report-table td {
-
     border: 1px solid black;
     padding: 1px;
     text-align: center;
@@ -155,65 +104,54 @@ body {
     line-height: 1.1;
     height: 16px;
     word-break: break-word;
-
 }
 
 .report-table th {
-
     background: #d9d9d9;
     font-weight: bold;
-
 }
 
 .subtotal {
-
     background: #e6e6e6;
     font-weight: bold;
-
 }
 
 .total {
-
     background: #cccccc;
     font-weight: bold;
-
 }
 
 .footer {
-
     margin-top: 6px;
     font-size: 7px;
     line-height: 1.3;
-
 }
 
 .signature {
-
     margin-top: 12px;
     width: 100%;
-
 }
 
 .signature td {
-
     border: none;
     font-size: 8px;
     font-weight: bold;
-
 }
 
 .back-btn {
-
     margin-top: 8px;
+}
+.pr-status {
+
+    font-family: Arial Black, Arial, sans-serif;
+    font-size: inherit;
 
 }
 
 @media print {
 
     .back-btn {
-
         display: none;
-
     }
 
 }
@@ -241,13 +179,11 @@ Periodic Monthly Master
 <tr>
 
 <td>
-From Date :
-<?php echo $from_date; ?>
+From Date : <?php echo $from_date; ?>
 </td>
 
 <td style="text-align:right;">
-To Date :
-<?php echo $to_date; ?>
+To Date : <?php echo $to_date; ?>
 </td>
 
 </tr>
@@ -295,7 +231,6 @@ while ($start <= $end) {
     echo "<th>" . date('d', $start) . "</th>";
 
     $start = strtotime('+1 day', $start);
-
 }
 
 ?>
@@ -320,7 +255,6 @@ while ($start <= $end) {
     echo "<th>" . date('D', $start) . "</th>";
 
     $start = strtotime('+1 day', $start);
-
 }
 
 ?>
@@ -329,10 +263,10 @@ while ($start <= $end) {
 
 <?php
 
-$grand_pr = 0;
-$grand_ab = 0;
-$grand_sp = 0;
-$grand_pp = 0;
+$grand_pr  = 0;
+$grand_ab  = 0;
+$grand_sp  = 0;
+$grand_pp  = 0;
 $grand_prc = 0;
 
 $contractor_query = "
@@ -350,30 +284,51 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
     $current_contractor = $contractor['contractor_name'];
 
-    $contractor_count_query = "
-    SELECT COUNT(*) AS total
+    // TOTAL WORKERS
+    $worker_count_query = "
+    SELECT COUNT(*) AS total_workers
     FROM master
-    WHERE contractor_name =
-    '$current_contractor'
+    WHERE contractor_name = '$current_contractor'
     ";
 
-    $contractor_count_result = mysqli_query(
+    $worker_count_result = mysqli_query(
         $connection,
-        $contractor_count_query
+        $worker_count_query
     );
 
-    $contractor_total =
+    $contractor_workers =
     mysqli_fetch_assoc(
-        $contractor_count_result
-    )['total'];
+        $worker_count_result
+    )['total_workers'];
+
+    // TOTAL CATEGORIES
+    $category_count_query = "
+    SELECT COUNT(DISTINCT category) AS total_categories
+    FROM master
+    WHERE contractor_name = '$current_contractor'
+    ";
+
+    $category_count_result = mysqli_query(
+        $connection,
+        $category_count_query
+    );
+
+    $total_categories =
+    mysqli_fetch_assoc(
+        $category_count_result
+    )['total_categories'];
+
+    // FINAL ROWSPAN
+    $contractor_total =
+    $contractor_workers + $total_categories;
 
     $show_contractor = true;
 
+    // CATEGORY QUERY
     $category_query = "
     SELECT DISTINCT category
     FROM master
-    WHERE contractor_name =
-    '$current_contractor'
+    WHERE contractor_name = '$current_contractor'
     ORDER BY FIELD(
         category,
         'MALI',
@@ -391,13 +346,12 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
         $current_category = $category['category'];
 
+        // CATEGORY TOTAL
         $category_count_query = "
         SELECT COUNT(*) AS total
         FROM master
-        WHERE contractor_name =
-        '$current_contractor'
-        AND category =
-        '$current_category'
+        WHERE contractor_name = '$current_contractor'
+        AND category = '$current_category'
         ";
 
         $category_count_result = mysqli_query(
@@ -410,13 +364,12 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
             $category_count_result
         )['total'];
 
+        // WORKER QUERY
         $worker_query = "
         SELECT *
         FROM master
-        WHERE contractor_name =
-        '$current_contractor'
-        AND category =
-        '$current_category'
+        WHERE contractor_name = '$current_contractor'
+        AND category = '$current_category'
         ";
 
         $worker_result = mysqli_query(
@@ -428,44 +381,40 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
 
         $sl_no = 1;
 
-        $subtotal_pr = 0;
-        $subtotal_ab = 0;
-        $subtotal_sp = 0;
-        $subtotal_pp = 0;
+        $subtotal_pr  = 0;
+        $subtotal_ab  = 0;
+        $subtotal_sp  = 0;
+        $subtotal_pp  = 0;
         $subtotal_prc = 0;
 
         while ($worker = mysqli_fetch_assoc($worker_result)) {
 
             echo "<tr>";
 
+            // CONTRACTOR COLUMN
             if ($show_contractor) {
 
                 echo
                 "<td rowspan='" .
-                ($contractor_total + 3) .
-                "'>"
-                .
-                $current_contractor
-                .
+                $contractor_total .
+                "'>" .
+                $current_contractor .
                 "</td>";
 
                 $show_contractor = false;
-
             }
 
+            // CATEGORY COLUMN
             if ($show_category) {
 
                 echo
                 "<td rowspan='" .
                 ($category_total + 1) .
-                "'>"
-                .
-                $current_category
-                .
+                "'>" .
+                $current_category .
                 "</td>";
 
                 $show_category = false;
-
             }
 
             echo "<td>" . $worker['employee_id'] . "</td>";
@@ -479,6 +428,7 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
             $sp  = 0;
             $pp  = 0;
             $prc = 0;
+
             $wff = false;
 
             foreach ($date_array as $date) {
@@ -486,10 +436,8 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
                 $attendance_query = "
                 SELECT status
                 FROM attendance_final
-                WHERE employee_id =
-                '{$worker['employee_id']}'
-                AND attendance_date =
-                '$date'
+                WHERE employee_id = '{$worker['employee_id']}'
+                AND attendance_date = '$date'
                 ";
 
                 $attendance_result = mysqli_query(
@@ -504,94 +452,85 @@ while ($contractor = mysqli_fetch_assoc($contractor_result)) {
                         $attendance_result
                     );
 
-                    $status =
-                    $attendance['status'];
-                    $current_day =
-date(
-    'D',
-    strtotime($date)
-);
+                    $status = $attendance['status'];
+                    
 
-if (
-    $current_day == 'Sun'
-) {
-
-    $wff = false;
-
-}
-
-if (
-
-    $current_day == 'Sun'
-
-    &&
-
-    (
-        $status == 'PR'
-        ||
-        $status == 'PRC'
-    )
-
-) {
-
-    $wff = true;
-
-}
-
-                }
-
-                else {
+                } else {
 
                     $status = "";
-
                 }
 
+                $current_day =
+                date(
+                    'D',
+                    strtotime($date)
+                );
 
+                // RESET WFF ON SUNDAY
+                if ($current_day == 'Sun') {
+
+                    $wff = false;
+                }
+
+                // IF SUNDAY PRESENT
+                if (
+                    $current_day == 'Sun' &&
+                    (
+                        $status == 'PR' ||
+                        $status == 'PRC'
+                    )
+                ) {
+
+                    $wff = true;
+                }
+
+                // COUNTS
                 if ($status == "PR") {
 
                     $pr++;
-
                 }
 
                 if ($status == "PRC") {
 
                     $prc++;
-
                 }
 
                 if ($status == "AB") {
 
-    if ($wff) {
+                    if ($wff) {
 
-        $status = "WFF";
+                        $status = "WFF";
 
-        $wff = false;
+                        $wff = false;
 
-    }
+                    } else {
 
-    else {
-
-        $ab++;
-
-    }
-
-}
+                        $ab++;
+                    }
+                }
 
                 if ($status == "SP") {
 
                     $sp++;
-
                 }
 
                 if ($status == "PP") {
 
                     $pp++;
-
                 }
-                echo "<td>$status</td>";
 
+                if ($status == 'PR') {
+
+    echo "<td class='pr-status'>$status</td>";
+
+} else {
+
+    echo "<td>$status</td>";
+
+}
             }
 
+            // TOTALS
             echo "<td>$pr</td>";
             echo "<td>$ab</td>";
             echo "<td>$sp</td>";
@@ -600,75 +539,69 @@ if (
 
             echo "</tr>";
 
-            $subtotal_pr += $pr;
-            $subtotal_ab += $ab;
-            $subtotal_sp += $sp;
-            $subtotal_pp += $pp;
+            // SUBTOTALS
+            $subtotal_pr  += $pr;
+            $subtotal_ab  += $ab;
+            $subtotal_sp  += $sp;
+            $subtotal_pp  += $pp;
             $subtotal_prc += $prc;
-
         }
 
-      $subtotal_colspan = 3;
+        // SUBTOTAL ROW
+        echo "<tr class='subtotal'>";
 
-echo "<tr class='subtotal'>";
+        echo "<td colspan='3'>SUB TOTAL</td>";
 
-echo "<td colspan='$subtotal_colspan'>SUB TOTAL</td>";
+        foreach ($date_array as $date) {
 
-foreach ($date_array as $date) {
+            $day_query = "
+            SELECT COUNT(*) AS total
+            FROM attendance_final af
+            INNER JOIN master m
+            ON af.employee_id = m.employee_id
+            WHERE m.contractor_name = '$current_contractor'
+            AND m.category = '$current_category'
+            AND af.attendance_date = '$date'
+            AND af.status IN ('PR')
+            ";
 
-    $day_total = 0;
+            $day_result = mysqli_query(
+                $connection,
+                $day_query
+            );
 
-    $day_query = "
-    SELECT COUNT(*) AS total
-    FROM attendance_final af
-    INNER JOIN master m
-    ON af.employee_id = m.employee_id
-    WHERE m.contractor_name = '$current_contractor'
-    AND m.category = '$current_category'
-    AND af.attendance_date = '$date'
-    AND af.status IN ('PR')
-    ";
+            $day_data = mysqli_fetch_assoc(
+                $day_result
+            );
 
-    $day_result = mysqli_query(
-        $connection,
-        $day_query
-    );
+            $day_total = $day_data['total'];
 
-    $day_data = mysqli_fetch_assoc(
-        $day_result
-    );
+            echo "<td>$day_total</td>";
+        }
 
-    $day_total = $day_data['total'];
+        echo "<td>$subtotal_pr</td>";
+        echo "<td>$subtotal_ab</td>";
+        echo "<td>$subtotal_sp</td>";
+        echo "<td>$subtotal_pp</td>";
+        echo "<td>$subtotal_prc</td>";
 
-    echo "<td>$day_total</td>";
+        echo "</tr>";
 
-}
-
-echo "<td>$subtotal_pr</td>";
-echo "<td>$subtotal_ab</td>";
-echo "<td>$subtotal_sp</td>";
-echo "<td>$subtotal_pp</td>";
-echo "<td>$subtotal_prc</td>";
-
-echo "</tr>";
-
-        $grand_pr += $subtotal_pr;
-        $grand_ab += $subtotal_ab;
-        $grand_sp += $subtotal_sp;
-        $grand_pp += $subtotal_pp;
+        // GRAND TOTALS
+        $grand_pr  += $subtotal_pr;
+        $grand_ab  += $subtotal_ab;
+        $grand_sp  += $subtotal_sp;
+        $grand_pp  += $subtotal_pp;
         $grand_prc += $subtotal_prc;
-
     }
-
 }
 
+// FINAL TOTAL ROW
 echo "<tr class='total'>";
 
-echo "<td colspan='4'>TOTAL</td>";
+echo "<td colspan='5'>TOTAL</td>";
 
 foreach ($date_array as $date) {
-
-    $grand_day_total = 0;
 
     $grand_query = "
     SELECT COUNT(*) AS total
@@ -689,7 +622,6 @@ foreach ($date_array as $date) {
     $grand_day_total = $grand_data['total'];
 
     echo "<td>$grand_day_total</td>";
-
 }
 
 echo "<td>$grand_pr</td>";
@@ -719,12 +651,12 @@ PRC : CORRECTED PRESENT
 <tr>
 
 <td>
-DIO/OFFICER<br>
+DO/OFFICER<br>
 of USER Section
 </td>
 
 <td style="text-align:right;">
-DIO/OFFICER of USER Section
+DO/OFFICER of USER Section
 </td>
 
 </tr>

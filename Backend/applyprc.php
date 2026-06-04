@@ -28,7 +28,7 @@ if (
     session_destroy();
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -52,7 +52,7 @@ if (
 ) {
 
     header(
-        "Location: index.html?admin=true"
+        "Location: index.php?admin=true"
     );
 
     exit();
@@ -236,7 +236,7 @@ if (
     </title>
 
     <link rel="stylesheet"
-          href="style.css">
+          href="../style.css">
 
 </head>
 
@@ -342,7 +342,7 @@ if (
 
 
             <button type="button"
-                    onclick="window.location.href='admin.php'">
+                    onclick="window.location.href='../admin.php'">
 
                 Back
 

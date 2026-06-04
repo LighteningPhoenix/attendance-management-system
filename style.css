@@ -833,13 +833,19 @@ button[onclick]:hover {
 
 #loginErrorMessage {
 
-    color: #dc2626;
+    color: red;
 
-    font-size: 18px;
+    font-size: 20px;
 
     font-weight: bold;
 
-    margin-bottom: 20px;
+    text-align: center;
+
+    margin-top: 15px;
+
+    margin-bottom: 15px;
+
+    min-height: 25px;
 
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-include 'db_connect.php';
+include 'Backend/db_connect.php';
 
 ?>
 
@@ -188,7 +188,7 @@ include 'db_connect.php';
 
 
         <button type="button"
-                onclick="window.location.href='index.html'">
+                onclick="window.location.href='index.php'">
 
             Back
 

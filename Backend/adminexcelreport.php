@@ -443,37 +443,21 @@ while (
 
                     $status =
                         $attendance['status'];
-                    $current_day =
-date(
-    'D',
-    strtotime($date)
-);
+                    $current_day = date('D', strtotime($date));
 
-if (
-    $current_day == 'Sun'
-) {
+                    if (
+                        $current_day == 'Sun'
+                    ) {
 
-    $wff = false;
+                        $wff = false;
 
-}
+                    }
 
-if (
+            if ($current_day == 'Sun' && ( $status == 'PR' || $status == 'PRC')) {
 
-    $current_day == 'Sun'
+                        $wff = true;
 
-    &&
-
-    (
-        $status == 'PR'
-        ||
-        $status == 'PRC'
-    )
-
-) {
-
-    $wff = true;
-
-}
+                    }
 
                 }
 
@@ -529,8 +513,7 @@ if (
                     $grand_daily_totals[$date]++;
 
                 }
-                echo
-"<td>$status</td>";
+                echo  "<td>$status</td>";
 
             }
 
